@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIRSOFFS | Заявки в семью</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900&display=swap');
+
+        :root {
+            /* Яркая, премиальная розовая палитра */
+            --accent: #ff007f; 
+            --accent-glow: rgba(255, 0, 127, 0.6);
+            --accent-dark: #cc0066;
+            --accent-light: #ff66b2;
+            --accent-gradient: linear-gradient(135deg, #ff007f 0%, #ff66b2 100%);
+            
+            --bg-dark: #0a0206;
+            --glass-bg: rgba(20, 5, 12, 0.65);
+            --glass-border: rgba(255, 102, 178, 0.25); 
+            --glass-highlight: rgba(255, 255, 255, 0.05);
+            
+            --text-main: #ffffff;
+            --text-muted: #bda8b3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Кастомный розовый скроллбар */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-dark); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        body {
+            background-image: url('1ab21825-0e64-4654-b4d2-cc511e47f99f.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at top left, rgba(60, 10, 40, 0.8) 0%, rgba(5, 0, 5, 0.98) 100%);
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            gap: 3rem;
+            max-width: 1300px;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 3.5rem;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.9), inset 0 0 40px rgba(255, 0, 127, 0.1);
+            animation: slideUpFade 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .profile {
+            flex: 1;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: sticky;
+            top: 3.5rem;
+            height: fit-content;
+        }
+
+        .profile-img-container {
+            width: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 2px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255, 0, 127, 0.3);
+            position: relative;
+            animation: pulseGlow 4s infinite alternate;
+        }
+
+        .profile-img-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(to top, rgba(10,2,6,1), transparent);
+        }
+
+        .profile-img {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .profile-img-container:hover .profile-img {
+            transform: scale(1.08);
+        }
+
+        .profile-info {
+            text-align: center;
+        }
+
+        .profile-info h1 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(to right, #ffffff, var(--accent-light), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            text-shadow: 0px 10px 20px rgba(255, 0, 127, 0.3);
+        }
+
+        .profile-info h2 {
+            font-size: 1.1rem;
+            color: var(--accent-light);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            text-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .dashboard {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 24px;
+            background: var(--accent-gradient);
+            border-radius: 6px;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .info-panel, .application-section {
+            background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.4));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-panel:hover, .application-section:hover {
+            border-color: rgba(255, 102, 178, 0.4);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(255, 0, 127, 0.15);
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: var(--accent-light);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .apply-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .form-row .form-group { flex: 1; }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .form-group input, 
+        .form-group textarea,
+        .custom-select-trigger {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            padding: 1.2rem 1.5rem;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus,
+        .custom-select-trigger:focus,
+        .custom-select.open .custom-select-trigger {
+            background: rgba(255, 0, 127, 0.05);
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.25);
+        }
+
+        .form-group input::placeholder, 
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Выпадающий список */
+        .custom-select-wrapper { position: relative; user-select: none; width: 100%; }
+        .custom-select { position: relative; display: flex; flex-direction: column; }
+        
+        .custom-select-trigger {
+            display: flex; align-items: center; justify-content: space-between;
+            cursor: pointer; color: rgba(255, 255, 255, 0.3);
+        }
+
+        .custom-select-trigger.selected { color: #fff; }
+        
+        .custom-select.open .custom-select-trigger {
+            border-bottom-left-radius: 0; border-bottom-right-radius: 0;
+        }
+
+        .arrow { position: relative; height: 10px; width: 10px; }
+        .arrow::before, .arrow::after {
+            content: ""; position: absolute; bottom: 0px; width: 0.15rem; height: 100%;
+            transition: all 0.3s ease; background-color: var(--accent-light);
+        }
+        .arrow::before { left: -3px; transform: rotate(-45deg); }
+        .arrow::after { left: 3px; transform: rotate(45deg); }
+        .custom-select.open .arrow::before { transform: rotate(45deg); }
+        .custom-select.open .arrow::after { transform: rotate(-45deg); }
+
+        .custom-options {
+            position: absolute; display: block; top: 100%; left: 0; right: 0;
+            border: 1px solid var(--accent); border-top: 0;
+            background: #0f0309; transition: all 0.3s ease;
+            opacity: 0; visibility: hidden; pointer-events: none; z-index: 10;
+            border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9); max-height: 250px; overflow-y: auto;
+        }
+
+        .custom-select.open .custom-options { opacity: 1; visibility: visible; pointer-events: all; }
+
+        .custom-option {
+            position: relative; display: block; padding: 1.2rem 1.5rem; font-size: 0.95rem;
+            color: #fff; cursor: pointer; transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .custom-option:last-child { border-bottom: none; }
+
+        .custom-option:hover {
+            background: rgba(255, 0, 127, 0.15); color: var(--accent-light); padding-left: 2rem;
+        }
+        
+        .custom-option.selected-opt {
+            background: rgba(255, 0, 127, 0.25); color: var(--accent); font-weight: 700;
+            border-left: 3px solid var(--accent);
+        }
+
+        .hidden-input { display: none; }
+        #other-tz-container { display: none; margin-top: 1rem; animation: slideUpFade 0.3s ease; }
+
+        .radio-group { display: flex; gap: 2rem; margin-top: 0.5rem; }
+        
+        .radio-label {
+            display: flex; align-items: center; gap: 0.6rem; color: #fff;
+            cursor: pointer; font-size: 1rem; font-weight: 500;
+        }
+        
+        .radio-label input[type="radio"] {
+            width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;
+        }
+
+        .submit-btn {
+            background: var(--accent-gradient);
+            color: #fff; border: none; padding: 1.2rem; border-radius: 14px;
+            font-size: 1.1rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 2px; cursor: pointer; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 20px rgba(255, 0, 127, 0.4); margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(255, 0, 127, 0.6);
+            background: linear-gradient(135deg, #ff1a8c 0%, #ff80bf 100%);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none;
+            background: #555; color: #aaa;
+        }
+
+        .form-message {
+            display: none; padding: 1.2rem; border-radius: 14px; text-align: center;
+            font-weight: 600; margin-top: 1.5rem; animation: slideUpFade 0.5s ease;
+        }
+
+        .msg-success { background: rgba(46, 204, 113, 0.1); border: 1px solid #2ecc71; color: #2ecc71; box-shadow: 0 0 15px rgba(46, 204, 113, 0.2); }
+        .msg-warning { background: rgba(245, 158, 11, 0.1); border: 1px solid #f59e0b; color: #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
+        .msg-error { background: rgba(255, 0, 127, 0.1); border: 1px solid var(--accent); color: var(--accent-light); box-shadow: 0 0 15px rgba(255, 0, 127, 0.2); }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseGlow {
+            from { box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 20px rgba(255, 0, 127, 0.2); }
+            to { box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 40px rgba(255, 0, 127, 0.6); }
+        }
+
+        @media (max-width: 1024px) {
+            .container { flex-direction: column; padding: 2.5rem; gap: 2rem; }
+            .profile { max-width: 100%; align-items: center; position: static; }
+            .profile-img-container { max-width: 320px; }
+            .info-panel { flex-direction: column; gap: 1.5rem; text-align: center; }
+            .form-row { flex-direction: column; gap: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+
+    <div class="container">
+        <div class="profile">
+            <div class="profile-img-container">
+                <img class="profile-img" src="1ab21825-0e64-4654-b4d2-cc511e47f99f.png" alt="Firsoffs Family">
+            </div>
+            <div class="profile-info">
+                <h1>FIRSOFFS</h1>
+                <h2>Игровая Семья</h2>
+            </div>
+        </div>
+
+        <div class="dashboard">
+
+            <div class="info-panel">
+                <div class="info-item">
+                    <span class="info-label">Сервер</span>
+                    <span class="info-value">🌸 CHILIAD</span>
+                </div>
+            </div>
+
+            <div class="application-section">
+                <div class="section-title">Заявка в семью</div>
+                <form id="apply-form" class="apply-form">
+                    
+                    <div class="form-group">
+                        <label>Имя Фамилия (Nick_Name)</label>
+                        <input type="text" id="playerName" name="playerName" placeholder="Например: Toffee Firsoffa" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ваш Discord</label>
+                            <input type="text" id="discordId" name="discordId" placeholder="Например: user#1234" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Ваш Static ID</label>
+                            <input type="number" id="staticId" name="staticId" placeholder="Например: 12345" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Часовой пояс</label>
+                            
+                            <div class="custom-select-wrapper">
+                                <div class="custom-select">
+                                    <div class="custom-select-trigger">
+                                        <span id="tz-text">Выберите часовой пояс...</span>
+                                        <div class="arrow"></div>
+                                    </div>
+                                    <div class="custom-options">
+                                        <span class="custom-option" data-value="-2 от МСК">-2 от МСК</span>
+                                        <span class="custom-option" data-value="-1 от МСК">-1 от МСК (Калининград)</span>
+                                        <span class="custom-option" data-value="По МСК">По МСК (Москва, Питер)</span>
+                                        <span class="custom-option" data-value="+1 от МСК">+1 от МСК (Самара)</span>
+                                        <span class="custom-option" data-value="+2 от МСК">+2 от МСК (Екатеринбург)</span>
+                                        <span class="custom-option" data-value="+3 от МСК">+3 от МСК (Омск)</span>
+                                        <span class="custom-option" data-value="+4 от МСК">+4 от МСК (Красноярск)</span>
+                                        <span class="custom-option" data-value="+5 от МСК">+5 от МСК (Иркутск)</span>
+                                        <span class="custom-option" data-value="+6 от МСК">+6 от МСК (Якутск)</span>
+                                        <span class="custom-option" data-value="+7 от МСК">+7 от МСК (Владивосток)</span>
+                                        <span class="custom-option" data-value="+8 от МСК">+8 от МСК (Сахалин)</span>
+                                        <span class="custom-option" data-value="+9 от МСК">+9 от МСК (Камчатка)</span>
+                                        <span class="custom-option" data-value="Другой">Другой</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="text" id="hidden-tz" name="timezone" class="hidden-input" required>
+                            
+                            <div id="other-tz-container">
+                                <label style="margin-bottom: 0.6rem; display: block; margin-top: 0.8rem;">Укажите свой часовой пояс</label>
+                                <input type="text" id="custom-tz-input" placeholder="Например: UTC+10">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Средний онлайн (в часах)</label>
+                            <input type="text" id="online" name="online" placeholder="Например: 4-6 часов" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Время прайм-тайма</label>
+                            <input type="text" id="primetime" name="primetime" placeholder="Например: с 18:00 до 22:00" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Знание правил сервера (от 1 до 10)</label>
+                            <input type="number" id="lawKnowledge" name="lawKnowledge" min="1" max="10" placeholder="Например: 8" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Наличие судимостей персонажа</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="criminal" value="Да" required> Да
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="criminal" value="Нет" required> Нет
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Опыт игры и цель вступления</label>
+                        <textarea id="reason" name="reason" placeholder="Кратко опишите ваш опыт на сервере и почему вы хотите вступить в нашу семью..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submit-btn">Отправить заявку</button>
+                    <div id="form-message" class="form-message"></div>
+                </form>
+            </div>
+
+            <div class="application-section">
+                <div class="section-title">Отслеживание заявки</div>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.2rem; line-height: 1.5;">Введите ваш Static ID, чтобы узнать текущий статус вашей поданной заявки.</p>
+                <div class="form-row" style="align-items: stretch;">
+                    <div class="form-group" style="margin: 0; flex: 1;">
+                        <input type="number" id="check-static-id" placeholder="Ваш Static ID" required>
+                    </div>
+                    <button type="button" class="submit-btn" id="check-status-btn" style="margin: 0; min-width: 200px;">Узнать статус</button>
+                </div>
+                <div id="status-result" class="form-message"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // === ЛОГИКА КАСТОМНОГО ВЫПАДАЮЩЕГО СПИСКА ===
+        document.querySelector('.custom-select-wrapper').addEventListener('click', function() {
+            this.querySelector('.custom-select').classList.toggle('open');
+        });
+
+        for (const option of document.querySelectorAll(".custom-option")) {
+            option.addEventListener('click', function() {
+                if (!this.classList.contains('selected-opt')) {
+                    const parent = this.parentNode;
+                    const prevSelected = parent.querySelector('.custom-option.selected-opt');
+                    if (prevSelected) {
+                        prevSelected.classList.remove('selected-opt');
+                    }
+                    this.classList.add('selected-opt');
+                    
+                    const trigger = this.closest('.custom-select').querySelector('.custom-select-trigger span');
+                    trigger.textContent = this.textContent;
+                    this.closest('.custom-select').querySelector('.custom-select-trigger').classList.add('selected');
+                    
+                    const val = this.getAttribute('data-value');
+                    document.getElementById('hidden-tz').value = val;
+                    const otherContainer = document.getElementById('other-tz-container');
+                    const customInput = document.getElementById('custom-tz-input');
+                    
+                    if (val === 'Другой') {
+                        otherContainer.style.display = 'block';
+                        customInput.setAttribute('required', 'required');
+                    } else {
+                        otherContainer.style.display = 'none';
+                        customInput.removeAttribute('required');
+                        customInput.value = '';
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('click', function(e) {
+            const select = document.querySelector('.custom-select');
+            if (!select.contains(e.target)) {
+                select.classList.remove('open');
+            }
+        });
+
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbytjQu5wy1mJPh8kL3Nx0UsDpp8NdDqpv7FIxqt4xSNgAS0M17VPFuNc7ISqJ77I1UkCg/exec'; 
+
+        // === ОТПРАВКА ЗАЯВКИ С ПРОВЕРКОЙ НА ДУБЛИКАТ ===
+        const form = document.getElementById('apply-form');
+        const btn = document.getElementById('submit-btn');
+        const messageBox = document.getElementById('form-message');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            
+            const hiddenTz = document.getElementById('hidden-tz');
+            const customInput = document.getElementById('custom-tz-input');
+            const staticIdVal = document.getElementById('staticId').value.trim();
+
+            if (!hiddenTz.value) {
+                alert("Пожалуйста, выберите часовой пояс!");
+                return;
+            }
+
+            let finalTimezone = hiddenTz.value;
+            if (finalTimezone === 'Другой') {
+                if (!customInput.value.trim()) {
+                    alert("Пожалуйста, введите ваш часовой пояс!");
+                    return;
+                }
+                finalTimezone = "Другой: " + customInput.value.trim();
+            }
+
+            const criminalVal = document.querySelector('input[name="criminal"]:checked');
+            if (!criminalVal) {
+                alert("Пожалуйста, укажите наличие судимостей!");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'Проверка базы данных...';
+            messageBox.style.display = 'none';
+
+            // Функция отправки POST-запроса через FormData
+            const sendData = () => {
+                btn.innerText = 'Отправка заявки...';
+                
+                const formData = new FormData(form);
+                formData.set('timezone', finalTimezone); // Перезаписываем пояс на финальный
+                
+                fetch(scriptURL, { 
+                    method: 'POST', 
+                    body: formData 
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Ошибка сервера');
+                    return response.json();
+                })
+                .then(data => {
+                    messageBox.className = 'form-message msg-success';
+                    messageBox.innerHTML = '✅ <b>Успешно!</b> Заявка в семью отправлена!';
+                    messageBox.style.display = 'block';
+                    btn.style.display = 'none';
+                    form.reset();
+                    
+                    document.getElementById('tz-text').textContent = 'Выберите часовой пояс...';
+                    document.querySelector('.custom-select-trigger').classList.remove('selected');
+                    const selectedOpt = document.querySelector('.custom-option.selected-opt');
+                    if(selectedOpt) selectedOpt.classList.remove('selected-opt');
+                    hiddenTz.value = '';
+                    document.getElementById('other-tz-container').style.display = 'none';
+
+                    setTimeout(() => {
+                        btn.style.display = 'block';
+                        btn.disabled = false;
+                        btn.innerText = 'Отправить заявку';
+                        messageBox.style.display = 'none';
+                    }, 5000);
+                })
+                .catch(error => {
+                    messageBox.className = 'form-message msg-error';
+                    messageBox.innerText = '❌ Ошибка записи в таблицу. Проверьте ссылку скрипта.';
+                    messageBox.style.display = 'block';
+                    btn.disabled = false;
+                    btn.innerText = 'Отправить заявку';
+                });
+            };
+
+            // 1. ПРОВЕРКА НА ДУБЛИКАТ
+            fetch(scriptURL + '?staticId=' + staticIdVal)
+                .then(response => {
+                    if (!response.ok) throw new Error('Ошибка сети при проверке');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.found) {
+                        messageBox.className = 'form-message msg-error';
+                        messageBox.innerText = '❌ Заявка с таким Static ID уже существует в базе!';
+                        messageBox.style.display = 'block';
+                        btn.disabled = false;
+                        btn.innerText = 'Отправить заявку';
+                    } else {
+                        // Дубликатов нет — отправляем
+                        sendData(); 
+                    }
+                })
+                .catch(error => {
+                    // Если локально блок CORS, то просто отправляем
+                    console.warn('Проверка базы пропущена. Отправляем заявку...');
+                    sendData();
+                });
+        });
+
+        // === ПРОВЕРКА СТАТУСА ЗАЯВКИ ===
+        const checkBtn = document.getElementById('check-status-btn');
+        const checkInput = document.getElementById('check-static-id');
+        const statusResult = document.getElementById('status-result');
+
+        checkBtn.addEventListener('click', () => {
+            const staticId = checkInput.value.trim();
+            if (!staticId) {
+                alert('Пожалуйста, введите ваш Static ID!');
+                return;
+            }
+
+            checkBtn.disabled = true;
+            checkBtn.innerText = 'Поиск...';
+            statusResult.style.display = 'none';
+
+            fetch(scriptURL + '?staticId=' + staticId)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
+                .then(data => {
+                    checkBtn.disabled = false;
+                    checkBtn.innerText = 'Узнать статус';
+                    statusResult.style.display = 'block';
+
+                    if (data.found) {
+                        let statusColorClass = 'msg-success'; 
+                        
+                        const statusLower = data.status.toLowerCase();
+                        if (statusLower.includes('отклон') || statusLower.includes('отказ')) {
+                            statusColorClass = 'msg-error';
+                        } else if (statusLower.includes('рассмотрени') || statusLower.includes('ожида')) {
+                            statusColorClass = 'msg-warning';
+                        }
+
+                        statusResult.className = 'form-message ' + statusColorClass;
+                        statusResult.innerHTML = `Статус вашей заявки: <b>${data.status}</b>`;
+                    } else {
+                        statusResult.className = 'form-message msg-error';
+                        statusResult.innerText = 'Заявка с таким Static ID не найдена.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка статуса:', error);
+                    checkBtn.disabled = false;
+                    checkBtn.innerText = 'Узнать статус';
+                    statusResult.className = 'form-message msg-error';
+                    statusResult.innerText = '❌ Ошибка связи с сервером. Попробуйте позже.';
+                    statusResult.style.display = 'block';
+                });
+        });
+    </script>
+</body>
+</html>
