@@ -604,13 +604,12 @@
                 
                 fetch(scriptURL, { 
                     method: 'POST', 
-                    body: formData 
+                    body: formData,
+                    mode: 'no-cors' // Обязательный параметр для обхода блокировки CORS
                 })
-                .then(response => {
-                    if (!response.ok) throw new Error('Ошибка сервера');
-                    return response.json();
-                })
-                .then(data => {
+                .then(() => {
+                    // При no-cors мы не можем прочитать статус ответа, 
+                    // поэтому при успешном выполнении запроса сразу показываем успех
                     messageBox.className = 'form-message msg-success';
                     messageBox.innerHTML = '✅ <b>Успешно!</b> Заявка в семью отправлена!';
                     messageBox.style.display = 'block';
@@ -632,8 +631,9 @@
                     }, 5000);
                 })
                 .catch(error => {
+                    // Сработает только при реальном отсутствии интернета
                     messageBox.className = 'form-message msg-error';
-                    messageBox.innerText = '❌ Ошибка записи в таблицу. Проверьте ссылку скрипта.';
+                    messageBox.innerText = '❌ Ошибка записи в таблицу. Проверьте подключение к сети.';
                     messageBox.style.display = 'block';
                     btn.disabled = false;
                     btn.innerText = 'Отправить заявку';
